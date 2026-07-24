@@ -4,7 +4,7 @@
 // 表記方針(_knowledge/07): 数値は出さず「〜寄り」の傾向表現。免責は結果と同一ビューに常時可視。
 // ===================================================================
 import { TYPES, TYPE_ORDER, GRID, AXIS } from './data.js?v=1';
-import { extractFace } from './analyzer.js?v=1';
+import { extractFace, FACE_OVAL, DRAW_PTS } from './analyzer.js?v=2';
 import { diagnose } from './diagnosis.js?v=1';
 
 const $=s=>document.querySelector(s);
@@ -174,6 +174,16 @@ function renderResult(r){
     </div>
     <div class="pc-res-method-wrap"><span class="pc-res-method">📸 顔写真の形（比率・配置・輪郭）から判定しました</span></div>
 
+    <div class="pc-block"><h4>AIが読み取ったあなたの顔</h4>
+      <div class="fc-overlay-wrap"><canvas id="pc-face-canvas" class="fc-face-canvas"></canvas></div>
+      <div class="fc-legend">
+        <span><i style="background:#B89A6A"></i>顔の三分割（おもざし）</span>
+        <span><i style="background:#8FA083"></i>輪郭ライン（かたち）</span>
+        <span><i style="background:#C98A7C"></i>目尻の角度</span>
+      </div>
+      <p class="pc-share-note">この線から「おもざし（子供↔大人）」「かたち（曲線↔直線）」を測っています。<br><small>写真は端末内だけで処理し、外部には送信していません。</small></p>
+    </div>
+
     <div class="pc-block"><h4>2軸マップ上の位置</h4>
       ${buildMap(r.typeId, t.accent)}
       ${axisRow('age', r.ageScore, t.accent)}
@@ -214,7 +224,69 @@ function renderResult(r){
       <button class="lx-btn lx-btn-green" id="pc-restart">別の写真で試す</button>
     </div>
   `;
+  drawFaceOverlay($('#pc-face-canvas'));
   $('#pc-restart').addEventListener('click',restart);
+}
+
+// ---- 自分の顔にAIが読み取ったライン（三分割・輪郭・目尻）を上品に重ねる ----
+// 顔部分にクローズアップして描画（顔分析ビジュアルらしく大きく・クリアに）
+function drawFaceOverlay(cv){
+  if(!cv || !view.imageData || !(view.face && view.face.raw)) return;
+  const raw=view.face.raw, W=view.W, H=view.H, P=DRAW_PTS;
+
+  // 顔のバウンディングボックス（輪郭点から）＋余白
+  let minx=1,maxx=0,miny=1,maxy=0;
+  FACE_OVAL.forEach(i=>{ const p=raw[i]; if(p.x<minx)minx=p.x; if(p.x>maxx)maxx=p.x; if(p.y<miny)miny=p.y; if(p.y>maxy)maxy=p.y; });
+  const bw=maxx-minx, bh=maxy-miny;
+  const padX=bw*0.30, padTop=bh*0.34, padBot=bh*0.14;
+  const sx=Math.max(0,(minx-padX))*W, sy=Math.max(0,(miny-padTop))*H;
+  const ex=Math.min(1,(maxx+padX))*W, ey=Math.min(1,(maxy+padBot))*H;
+  const sw=ex-sx, sh=ey-sy;
+
+  const outW=360, outH=Math.max(40, Math.round(outW*sh/sw));
+  cv.width=outW; cv.height=outH;
+  const c=cv.getContext('2d');
+  const off=document.createElement('canvas'); off.width=W; off.height=H;
+  off.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(view.imageData),W,H),0,0);
+  c.drawImage(off, sx,sy,sw,sh, 0,0,outW,outH);
+  // ごく薄いベール（ラインを映えさせる）
+  c.fillStyle='rgba(28,24,20,.08)'; c.fillRect(0,0,outW,outH);
+
+  // クロップ空間へ座標変換
+  const X=i=>(raw[i].x*W - sx)/sw*outW;
+  const Y=i=>(raw[i].y*H - sy)/sh*outH;
+
+  // (1) 輪郭ライン（かたち）＝セージ
+  c.strokeStyle='rgba(143,160,131,.95)'; c.lineWidth=2.2; c.lineJoin='round';
+  c.beginPath();
+  FACE_OVAL.forEach((idx,i)=>{ const x=X(idx),y=Y(idx); i?c.lineTo(x,y):c.moveTo(x,y); });
+  c.closePath(); c.stroke();
+
+  // (2) 顔の三分割（おもざし）＝ゴールドの水平線＋右にラベル
+  const xL=X(P.cheekL), xR=X(P.cheekR), pad=(xR-xL)*0.14;
+  const thirds=[[P.brow,'眉'],[P.subnasale,'鼻下'],[P.chin,'あご']];
+  c.setLineDash([5,4]); c.lineWidth=1.4; c.strokeStyle='rgba(184,154,106,.95)';
+  c.font='600 11px "Noto Sans JP",sans-serif'; c.textBaseline='middle';
+  thirds.forEach(([idx,lab])=>{ const y=Y(idx);
+    c.beginPath(); c.moveTo(xL-pad,y); c.lineTo(xR+pad,y); c.stroke();
+    c.setLineDash([]); c.fillStyle='rgba(150,120,74,.95)'; c.fillText(lab, xR+pad+4, y); c.setLineDash([5,4]);
+  });
+  c.setLineDash([]);
+
+  // (3) 目尻の角度（かたち）＝ローズ（目頭〜目尻を外側へ少し延長して角度を見せる）
+  c.strokeStyle='rgba(201,138,124,.98)'; c.lineWidth=2.6; c.lineCap='round';
+  const eyeLine=(inn,out)=>{
+    const ix=X(inn),iy=Y(inn),ox=X(out),oy=Y(out);
+    const ex=ox+(ox-ix)*0.5, ey2=oy+(oy-iy)*0.5;   // 目尻側へ50%延長
+    c.beginPath(); c.moveTo(ix,iy); c.lineTo(ex,ey2); c.stroke();
+  };
+  eyeLine(P.eyeL_in,P.eyeL_out); eyeLine(P.eyeR_in,P.eyeR_out);
+
+  // 主要点の白ドット（目頭・目尻）
+  [P.eyeL_in,P.eyeL_out,P.eyeR_in,P.eyeR_out].forEach(idx=>{
+    c.beginPath(); c.arc(X(idx),Y(idx),3.2,0,Math.PI*2); c.fillStyle='#fff'; c.fill();
+    c.lineWidth=1; c.strokeStyle='rgba(71,63,54,.35)'; c.stroke();
+  });
 }
 
 function restart(){

@@ -122,5 +122,11 @@ export function extractFace(result){
 
   const quality={ rollDeg, yawDeg, pitchDeg, eyeOpen, smile, warnings:[], flags:{} };
 
-  return { ok:true, features, quality, lm, faceTopY:yTop, chinY:yChin, W };
+  return { ok:true, features, quality, lm, raw:lm0, faceTopY:yTop, chinY:yChin, W };
 }
+
+// 顔の輪郭ライン用（MediaPipe FACE_OVAL の点列・描画用に公開）
+export const FACE_OVAL=[10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109];
+// 描画で使う主要点（元画像座標）: 三分割・目尻・眉
+export const DRAW_PTS={ top:10, brow:9, subnasale:2, chin:152, cheekL:234, cheekR:454,
+  eyeL_out:33, eyeL_in:133, eyeR_in:362, eyeR_out:263, browL:105, browR:334 };
