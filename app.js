@@ -3,7 +3,7 @@
 // 顔写真1枚 → FaceLandmarker(478点)解析 → 2軸スコア → 8タイプ → 結果
 // 表記方針(_knowledge/07): 数値は出さず「〜寄り」の傾向表現。免責は結果と同一ビューに常時可視。
 // ===================================================================
-import { TYPES, TYPE_ORDER, GRID, AXIS, CROSS, NECKLINES } from './data.js?v=3';
+import { TYPES, TYPE_ORDER, GRID, AXIS, CROSS, NECKLINES, BOUQUETS, HAIRS } from './data.js?v=4';
 import { extractFace, FACE_OVAL, DRAW_PTS } from './analyzer.js?v=2';
 import { diagnose } from './diagnosis.js?v=2';
 
@@ -151,6 +151,46 @@ function necklineDiagrams(typeId, accent){
   }).join('')}</div>`;
 }
 
+// ---- ブーケの形を図解 ----
+const BQ_LABEL={round:'ラウンド',oval:'オーバル',teardrop:'ティアドロップ',cascade:'キャスケード',clutch:'クラッチ'};
+const BQ_MASS={
+  round:'<circle cx="46" cy="40" r="28"/>',
+  oval:'<ellipse cx="46" cy="42" rx="22" ry="32"/>',
+  teardrop:'<path d="M46,10 C24,10 22,38 30,56 C37,72 46,94 46,94 C46,94 55,72 62,56 C70,38 68,10 46,10 Z"/>',
+  cascade:'<path d="M22,38 Q22,12 46,12 Q70,12 70,38 Q70,54 60,64 Q56,84 50,104 L42,104 Q38,80 32,64 Q22,54 22,38 Z"/>',
+  clutch:'<ellipse cx="46" cy="44" rx="15" ry="36"/>',
+};
+const BQ_STEM={
+  round:'<path d="M46,66 L46,96 M46,80 l-8,9 M46,80 l8,9" stroke="#9DB98D" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  oval:'<path d="M46,72 L46,98" stroke="#9DB98D" stroke-width="2" stroke-linecap="round"/>',
+  clutch:'<path d="M40,78 L38,100 M46,80 L46,100 M52,78 L54,100" stroke="#9DB98D" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  teardrop:'', cascade:'',
+};
+function bouquetDiagrams(typeId, accent){
+  const shapes=BOUQUETS[typeId]||[]; if(!shapes.length) return '';
+  return `<div class="fc-shape-row">${shapes.map(s=>{ const m=BQ_MASS[s]; if(!m) return '';
+    return `<div class="fc-shape-item"><svg viewBox="0 0 92 116" class="fc-shape-svg" xmlns="http://www.w3.org/2000/svg"><g fill="${accent}" fill-opacity="0.26" stroke="${accent}" stroke-width="2.4">${m}</g>${BQ_STEM[s]||''}</svg><span>${BQ_LABEL[s]||''}</span></div>`;
+  }).join('')}</div>`;
+}
+
+// ---- ヘアのシルエットを図解（後ろ姿） ----
+const HAIR_LABEL={down:'ダウン',updo:'アップ',halfup:'ハーフアップ',lowbun:'ローシニヨン',ponytail:'ポニーテール'};
+const HD='fill="#E7DCCA" stroke="#CBBFAE" stroke-width="1.5"';
+const HR='fill="#8a6f57"';
+const HAIR_SHAPES={
+  down:`<path ${HR} d="M26,36 Q26,18 46,18 Q66,18 66,36 Q70,64 66,96 Q62,112 52,114 L40,114 Q30,112 26,96 Q22,64 26,36 Z"/><ellipse ${HD} cx="46" cy="44" rx="18" ry="22"/>`,
+  updo:`<circle ${HR} cx="46" cy="22" r="11"/><ellipse ${HR} cx="46" cy="52" rx="24" ry="28"/><ellipse ${HD} cx="46" cy="52" rx="18" ry="22"/>`,
+  halfup:`<path ${HR} d="M28,40 Q28,20 46,20 Q64,20 64,40 Q66,74 60,100 L32,100 Q26,74 28,40 Z"/><ellipse ${HD} cx="46" cy="46" rx="18" ry="22"/><path ${HR} d="M38,22 Q46,14 54,22 Q50,28 46,28 Q42,28 38,22 Z"/>`,
+  lowbun:`<ellipse ${HD} cx="46" cy="46" rx="18" ry="22"/><path ${HR} d="M28,42 Q28,22 46,22 Q64,22 64,42 Q64,58 58,66 L34,66 Q28,58 28,42 Z"/><ellipse ${HD} cx="46" cy="44" rx="15" ry="19"/><circle ${HR} cx="46" cy="80" r="12"/>`,
+  ponytail:`<ellipse ${HR} cx="46" cy="46" rx="22" ry="26"/><ellipse ${HD} cx="46" cy="46" rx="18" ry="22"/><path ${HR} d="M46,70 Q40,92 44,112 Q46,118 48,112 Q54,92 46,70 Z"/>`,
+};
+function hairDiagrams(typeId){
+  const shapes=HAIRS[typeId]||[]; if(!shapes.length) return '';
+  return `<div class="fc-shape-row">${shapes.map(s=>{ const c=HAIR_SHAPES[s]; if(!c) return '';
+    return `<div class="fc-shape-item"><svg viewBox="0 0 92 126" class="fc-shape-svg" xmlns="http://www.w3.org/2000/svg">${c}</svg><span>${HAIR_LABEL[s]||''}</span></div>`;
+  }).join('')}</div>`;
+}
+
 // ---- 2軸マップ ----
 function buildMap(typeId, accent){
   const rows=GRID.map(row=>row.map(id=>{
@@ -227,10 +267,10 @@ function renderResult(r){
       </div>
       <div class="fc-wd-grid">
         <div class="fc-wd-card fc-neck-card"><b>💠 ネックライン</b>${necklineDiagrams(r.typeId, t.accent)}<p>${b.neckline}</p></div>
-        <div class="fc-wd-card"><b>💇‍♀️ ヘア</b><p>${b.hair}</p></div>
+        <div class="fc-wd-card fc-neck-card"><b>💇‍♀️ ヘア</b>${hairDiagrams(r.typeId)}<p>${b.hair}</p></div>
         <div class="fc-wd-card"><b>💄 メイク</b><p>${b.makeup}</p></div>
         <div class="fc-wd-card"><b>💍 アクセサリー</b><p>${b.accessory}</p></div>
-        <div class="fc-wd-card"><b>💐 ブーケ</b><p>${b.bouquet}</p></div>
+        <div class="fc-wd-card fc-neck-card"><b>💐 ブーケ</b>${bouquetDiagrams(r.typeId, t.accent)}<p>${b.bouquet}</p></div>
         <div class="fc-wd-card"><b>👗 ドレスの雰囲気</b><p>${b.dress}</p></div>
         <div class="fc-wd-card"><b>📷 前撮りロケ</b><p>${b.photo}</p></div>
       </div>

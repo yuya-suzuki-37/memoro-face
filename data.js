@@ -204,3 +204,25 @@ export const NECKLINES = {
   elegant: ['round','boat','offshoulder'],
   sharp:   ['boat','square','oneshoulder'],
 };
+// タイプ別ブーケの形（app.jsのBQ_SHAPES）
+export const BOUQUETS = {
+  sweet:   ['round'],
+  fresh:   ['round','teardrop'],
+  natural: ['clutch'],
+  soft:    ['round','oval'],
+  chic:    ['oval','clutch'],
+  glamour: ['round','oval'],
+  elegant: ['cascade','round'],
+  sharp:   ['clutch','oval'],
+};
+// タイプ別ヘアのシルエット（app.jsのHAIR_SHAPES）
+export const HAIRS = {
+  sweet:   ['down','halfup'],
+  fresh:   ['halfup','updo'],
+  natural: ['lowbun','down'],
+  soft:    ['lowbun','updo'],
+  chic:    ['updo','ponytail'],
+  glamour: ['updo','down'],
+  elegant: ['updo'],
+  sharp:   ['updo','ponytail'],
+};

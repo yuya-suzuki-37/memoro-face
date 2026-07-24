@@ -111,3 +111,9 @@
 .fc-neck-item{ text-align:center; }
 .fc-neck-svg{ width:78px; height:auto; display:block; }
 .fc-neck-item span{ display:block; margin-top:3px; font-size:11px; color:var(--lx-muted,#9E927E); }
+
+/* ---------- ブーケ・ヘアの図解（ネックラインと共通） ---------- */
+.fc-shape-row{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:10px 0 12px; }
+.fc-shape-item{ text-align:center; }
+.fc-shape-svg{ width:66px; height:auto; display:block; }
+.fc-shape-item span{ display:block; margin-top:3px; font-size:11px; color:var(--lx-muted,#9E927E); }
