@@ -90,3 +90,17 @@
 }
 .fc-legend span{ display:inline-flex; align-items:center; gap:5px; }
 .fc-legend i{ width:14px; height:3px; border-radius:2px; display:inline-block; }
+
+/* ---------- ドレス注記・掛け合わせ導線 ---------- */
+.fc-wd-foot{
+  margin:14px 2px 0; font-size:12px; line-height:1.85; color:var(--lx-ink-2,#6E6457);
+  padding:11px 14px; background:var(--lx-cream,#FBF7F1); border-radius:10px;
+}
+.fc-cross{
+  margin:20px 0 6px; padding:18px 18px 20px; border-radius:14px; text-align:center;
+  background:var(--lx-blush-soft,#F8EFE8); border:1px solid var(--lx-line,#E7DCCA);
+}
+.fc-cross h4{ margin:0 0 6px; font-family:var(--lx-serif); color:var(--lx-ink,#473F36); }
+.fc-cross p{ font-size:12.5px; line-height:1.85; color:var(--lx-ink-2,#6E6457); margin:0 0 12px; }
+.fc-cross-btns{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.fc-cross-btns .lx-btn{ padding:11px 20px; font-size:13px; }

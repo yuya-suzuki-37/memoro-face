@@ -3,7 +3,7 @@
 // 顔写真1枚 → FaceLandmarker(478点)解析 → 2軸スコア → 8タイプ → 結果
 // 表記方針(_knowledge/07): 数値は出さず「〜寄り」の傾向表現。免責は結果と同一ビューに常時可視。
 // ===================================================================
-import { TYPES, TYPE_ORDER, GRID, AXIS } from './data.js?v=1';
+import { TYPES, TYPE_ORDER, GRID, AXIS, CROSS } from './data.js?v=2';
 import { extractFace, FACE_OVAL, DRAW_PTS } from './analyzer.js?v=2';
 import { diagnose } from './diagnosis.js?v=2';
 
@@ -206,8 +206,18 @@ function renderResult(r){
         <div class="fc-wd-card"><b>💄 メイク</b><p>${b.makeup}</p></div>
         <div class="fc-wd-card"><b>💍 アクセサリー</b><p>${b.accessory}</p></div>
         <div class="fc-wd-card"><b>💐 ブーケ</b><p>${b.bouquet}</p></div>
-        <div class="fc-wd-card"><b>👗 ドレス</b><p>${b.dress}</p></div>
+        <div class="fc-wd-card"><b>👗 ドレスの雰囲気</b><p>${b.dress}</p></div>
         <div class="fc-wd-card"><b>📷 前撮りロケ</b><p>${b.photo}</p></div>
+      </div>
+      <p class="fc-wd-foot">これらは<b>顔まわり（ネックライン・ヘア・メイク）を軸にした、前撮り当日で使えるご提案</b>です。<br>👗 ドレスの<b>シルエット</b>（Aライン／マーメイド等）は<b>骨格タイプ</b>で決まります。合わせるとより確実です。</p>
+    </div>
+
+    <div class="fc-cross">
+      <h4>さらに“似合う”を完成させるなら</h4>
+      <p>顔＝首から上／骨格＝首から下（ドレスのシルエット）／カラー＝似合う色。<b>3つ揃うと、あなただけの花嫁スタイリングが完成</b>します。</p>
+      <div class="fc-cross-btns">
+        <a class="lx-btn lx-btn-ghost" href="${CROSS.skeletal}" target="_blank" rel="noopener">骨格診断（無料）</a>
+        <a class="lx-btn lx-btn-ghost" href="${CROSS.color}" target="_blank" rel="noopener">パーソナルカラー診断（無料）</a>
       </div>
     </div>
 
