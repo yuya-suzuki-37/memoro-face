@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>顔立ち診断 | Memoro</title>
+<meta name="description" content="顔写真1枚で、あなたの顔立ちの傾向を8タイプでセルフチェック。質問なし。Memoro（メモロ）の無料コンテンツ。似合うネックライン・ヘア・メイク・ブーケまでご提案します。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Shippori+Mincho:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1" />
+<link rel="stylesheet" href="redesign.css?v=1" />
+<link rel="stylesheet" href="pc.css?v=1" />
+<link rel="stylesheet" href="face.css?v=1" />
+</head>
+<body class="lx">
+
+<div class="lx-topbar">MEMORO — PHOTO WEDDING ／ 顔立ちから、いちばん映える花嫁へ。</div>
+
+<header class="lx-header">
+  <a class="lx-logo" href="#top">
+    <span class="lx-logo-mark">M</span>
+    <span class="lx-logo-text">Memoro<em>Face</em></span>
+  </a>
+  <nav class="lx-nav">
+    <a href="#about">特徴</a>
+    <a href="#start" class="js-reveal">はじめる</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="lx-hero" id="top">
+  <div class="lx-hero-bg" aria-hidden="true"></div>
+  <div class="lx-hero-inner">
+    <p class="lx-hero-eyebrow">Your face, your radiance</p>
+    <h1 class="lx-hero-title">似合う見せ方は、<br><i>顔立ちで決まる。</i></h1>
+    <p class="lx-hero-lead">
+      顔写真を1枚アップするだけ。AIが<strong>おもざし（子供っぽい↔大人っぽい）</strong>と<br>
+      <strong>かたち（曲線的↔直線的）</strong>の2軸から、<strong>8つの顔立ちタイプ</strong>を判定。<br>
+      似合うネックライン・ヘア・メイク・ブーケまでご提案します。
+    </p>
+    <a href="#start" class="lx-btn lx-btn-gold js-reveal">無料ではじめる</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="lx-about" id="about">
+  <div class="lx-about-item"><span class="lx-about-no">01</span><h3>写真だけ・質問ゼロ</h3><p>顔写真を1枚アップするだけ。端末内で解析し、写真を外部に送信しません。</p></div>
+  <div class="lx-about-item"><span class="lx-about-no">02</span><h3>2軸で8タイプ</h3><p>顔の縦横比・パーツの配置・輪郭の丸みなどをAIが測り、2軸マップ上に位置づけます。</p></div>
+  <div class="lx-about-item"><span class="lx-about-no">03</span><h3>花嫁の見せ方を提案</h3><p>ネックライン・ヘア・メイク・アクセ・ブーケ・ドレス・ロケまでご提案。</p></div>
+</section>
+
+<!-- TOOL -->
+<section class="lx-start" id="start" hidden>
+  <div class="lx-sec-head">
+    <span class="lx-sec-no">STEP 01</span>
+    <h2 class="lx-sec-title">顔写真をアップする</h2>
+    <p class="lx-sec-sub"><b>質問はありません。</b>写真は端末内だけで解析し、外部には送信しません。</p>
+  </div>
+
+  <p class="pc-shoot-guide">📷 <b>正面・まっすぐ・無表情</b>（笑うと目や口の形が変わります）／<b>前髪は上げて輪郭を出す</b>／<b>ノーメイクがおすすめ</b>（描き眉やアイメイクは形を変えます）／カメラは<b>目の高さで水平</b>・<b>50cm以上離して</b>（近すぎると顔が歪みます）。<b>⌘V貼り付け</b>・<b>ドラッグ&ドロップ</b>もOK。</p>
+
+  <div class="fc-upload">
+    <div class="pc-slot" id="pc-slot-face">
+      <div class="pc-slot-head"><h5>顔写真</h5><span class="pc-slot-badge req">必須</span></div>
+      <p class="pc-slot-hint">顔全体（額〜あご）が写るように。帽子・メガネは外してください。</p>
+      <input type="file" id="pc-file-face" accept="image/*,.heic,.heif" hidden>
+      <label for="pc-file-face" class="pc-slot-btn">📷 顔写真を選ぶ</label>
+      <div class="pc-slot-prev" id="pc-prev-face" hidden><canvas id="pc-canvas-face"></canvas></div>
+      <p class="pc-status" id="pc-status-face"></p>
+    </div>
+  </div>
+
+  <p id="pc-status" class="pc-status pc-status-global"></p>
+
+  <div class="lx-actions" style="margin-top:26px">
+    <button class="lx-btn lx-btn-gold" id="pc-diagnose" disabled>この写真で診断する</button>
+    <p id="pc-diagnose-hint" class="pc-diagnose-hint">まず顔写真をアップしてください</p>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section class="lx-section" id="pc-result" hidden>
+  <div class="lx-sec-head">
+    <span class="lx-sec-no">RESULT</span>
+    <h2 class="lx-sec-title">あなたの顔立ちタイプ</h2>
+  </div>
+  <div id="pc-result-body"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="lx-footer">
+  <div class="lx-foot-brand">Memoro<em>Face</em></div>
+  <div class="lx-foot-links"><span>プライバシーポリシー</span><span>利用規約</span><span>免責事項</span></div>
+  <p class="lx-foot-disc">本コンテンツは、フォトウェディング「Memoro」が写真映えのご提案を目的に独自に作成した簡易セルフチェックです。「顔タイプ診断®」（一般社団法人日本顔タイプ診断協会の登録商標）をはじめ、特定の登録商標・診断体系とは<b>一切関係がなく、非公認・非提携</b>です。各名称は各権利者の登録商標です。結果は顔写真のAI測定に基づく<b>傾向の目安</b>であり、医学的・美容的な診断ではありません。専門家による対面診断の代替ではなく、似合う/似合わないを断定するものでもありません。写真の角度・表情・照明・メイクにより結果が変わることがあります。<br><b>プライバシー：</b>写真の解析は端末内で行い、<b>写真が外部に送信されることはありません</b>。</p>
+  <div class="lx-foot-copy">© 2026 Memoro Photo Wedding</div>
+</footer>
+
+<div id="pc-loading" class="pc-loading" hidden><div class="pc-spin"></div><span id="pc-loading-text">処理中…</span></div>
+
+<script type="module" src="app.js?v=1"></script>
+</body>
+</html>

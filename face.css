@@ -1,0 +1,79 @@
+/* ============================================================
+   顔立ち診断 固有スタイル（pc.css の 2スロット系を1枚用に調整）
+   ============================================================ */
+
+/* アップロードは1枚なので中央寄せ・幅制限 */
+.fc-upload{ max-width:420px; margin:0 auto; }
+.fc-upload .pc-slot{ text-align:center; }
+.fc-upload .pc-slot-prev canvas{ max-height:320px; }
+
+/* ---------- 2軸マップ（結果画面） ---------- */
+.fc-map{ margin:6px 0 2px; }
+.fc-map-wrap{
+  position:relative; max-width:420px; margin:0 auto;
+  padding:26px 30px 30px; background:var(--lx-paper,#fff);
+  border:1px solid var(--lx-line,#E7DCCA); border-radius:16px;
+}
+.fc-map-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
+  gap:6px; aspect-ratio:1/1;
+}
+.fc-cell{
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  border-radius:10px; background:var(--lx-cream-2,#F4EEE2);
+  font-family:var(--lx-sans); font-size:10.5px; line-height:1.45;
+  color:var(--lx-muted,#9E927E); padding:4px; transition:all .3s;
+}
+.fc-cell.empty{ background:transparent; }
+.fc-cell.on{
+  background:var(--sa,#C98A7C); color:#fff; font-weight:700; font-size:11px;
+  box-shadow:0 4px 14px rgba(0,0,0,.14); transform:scale(1.04);
+}
+/* 軸ラベル */
+.fc-axis-x, .fc-axis-y{
+  font-family:var(--lx-sans); font-size:10.5px; color:var(--lx-muted,#9E927E); letter-spacing:.04em;
+}
+.fc-axis-x{ display:flex; justify-content:space-between; margin-top:10px; }
+.fc-axis-y{
+  position:absolute; left:6px; top:50%; transform:translateY(-50%) rotate(-180deg);
+  writing-mode:vertical-rl; height:62%; display:flex; justify-content:space-between;
+}
+.fc-map-note{ text-align:center; font-size:11.5px; color:var(--lx-muted,#9E927E); margin:12px 0 0; }
+
+/* ---------- 軸の傾き表示（数値でなく“寄り”） ---------- */
+.fc-axis-row{ display:flex; align-items:center; gap:10px; margin:9px 0; }
+.fc-axis-name{ flex:0 0 72px; font-size:12.5px; color:var(--lx-ink-2,#6E6457); }
+.fc-axis-bar{
+  position:relative; flex:1; height:8px; border-radius:999px;
+  background:linear-gradient(90deg,#EFE3D6,#F6EFE6,#EFE3D6);
+}
+.fc-axis-bar i{
+  position:absolute; top:50%; transform:translate(-50%,-50%);
+  width:16px; height:16px; border-radius:50%; background:var(--sa,#C98A7C);
+  border:2.5px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.18);
+}
+.fc-axis-ends{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--lx-muted,#9E927E); margin-top:2px; }
+.fc-axis-verdict{ flex:0 0 84px; text-align:right; font-size:12px; font-weight:700; color:var(--lx-rose-deep,#B06E60); }
+
+/* ---------- 花嫁提案カード ---------- */
+.fc-wd-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-top:14px; }
+.fc-wd-card{
+  background:var(--lx-paper,#fff); border:1px solid var(--lx-line,#E7DCCA);
+  border-radius:12px; padding:13px 15px;
+}
+.fc-wd-card b{ display:block; font-size:12.5px; color:var(--lx-rose-deep,#B06E60); margin-bottom:5px; }
+.fc-wd-card p{ font-size:12.5px; line-height:1.85; color:var(--lx-ink-2,#6E6457); margin:0; }
+
+/* ---------- 免責（結果と同一ビューに常時可視） ---------- */
+.fc-disclaimer{
+  margin:20px 0 6px; padding:14px 16px; border-radius:12px;
+  background:#FAF6EF; border:1px solid var(--lx-line,#E7DCCA);
+  font-size:11.5px; line-height:1.9; color:var(--lx-ink-2,#6E6457);
+}
+.fc-disclaimer b{ color:var(--lx-rose-deep,#B06E60); }
+
+@media (max-width:680px){
+  .fc-map-wrap{ padding:22px 26px 26px; }
+  .fc-axis-name{ flex-basis:60px; font-size:12px; }
+  .fc-axis-verdict{ flex-basis:74px; font-size:11.5px; }
+}
