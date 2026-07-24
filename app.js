@@ -1,12 +1,26 @@
 // ===================================================================
-// 顔立ち診断 — メインコントローラ（STEP 2: 土台）
-// 顔写真1枚 → (STEP3で)FaceLandmarker解析 → 2軸スコア → 8タイプ → 結果
-// ※現在は診断エンジン未実装。__stubDiagnose() が仮の結果を返す（STEP3で差し替え）。
+// 顔立ち診断 — メインコントローラ
+// 顔写真1枚 → FaceLandmarker(478点)解析 → 2軸スコア → 8タイプ → 結果
 // 表記方針(_knowledge/07): 数値は出さず「〜寄り」の傾向表現。免責は結果と同一ビューに常時可視。
 // ===================================================================
 import { TYPES, TYPE_ORDER, GRID, AXIS } from './data.js?v=1';
+import { extractFace } from './analyzer.js?v=1';
+import { diagnose } from './diagnosis.js?v=1';
 
 const $=s=>document.querySelector(s);
+const VISION='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9';
+const FACE_MODEL='https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+let faceLandmarker=null;
+async function ensureFace(){
+  if(faceLandmarker) return;
+  showLoading('AIモデルを初期化しています…（初回のみ数秒）');
+  const vision=await import(`${VISION}/vision_bundle.mjs`);
+  const fileset=await vision.FilesetResolver.forVisionTasks(`${VISION}/wasm`);
+  faceLandmarker=await vision.FaceLandmarker.createFromOptions(fileset,{
+    baseOptions:{ modelAssetPath:FACE_MODEL }, runningMode:'IMAGE', numFaces:1,
+    outputFaceBlendshapes:true, outputFacialTransformationMatrixes:true,
+  });
+}
 
 const view={ canvas:null, ctx:null, W:0, H:0, imageData:null, loaded:false, objURL:null, face:null };
 
@@ -87,29 +101,25 @@ function refreshDiagnoseState(){
   if(hint) hint.textContent = view.loaded ? 'この写真で診断します' : 'まず顔写真をアップしてください';
 }
 
-// ===================================================================
-// 🚧 STEP 3 で差し替え: 実際の FaceLandmarker 解析＋2軸採点
-// 現在はレイアウト確認用の仮結果を返す
-// ===================================================================
-function __stubDiagnose(){
-  return {
-    typeId:'soft',            // 判定タイプ
-    ageScore:0.15,            // -1(子供) 〜 +1(大人)
-    shapeScore:-0.55,         // -1(曲線) 〜 +1(直線)
-    ageBand:0, shapeBand:-1,  // 3帯: -1/0/+1
-    confidence:'medium',      // medium | low （high は出さない方針）
-    mixed:false,
-    reasons:['🚧 これは表示確認用の仮結果です（診断エンジンはSTEP 3で実装）'],
-    notes:[],
-  };
-}
-
+// ---- 診断（FaceLandmarker解析 → 2軸採点 → 8タイプ） ----
 $('#pc-diagnose').addEventListener('click', async()=>{
   if(!view.loaded){ setStatus('先に顔写真をアップロードしてください。'); return; }
-  showLoading('顔立ちを解析しています…');
+  let result;
+  try{
+    await ensureFace();
+    showLoading('顔立ちを解析しています…');
+    const det=faceLandmarker.detect(view.canvas);
+    const fx=extractFace(det);
+    if(!fx.ok){ hideLoading(); setStatus('⚠️ '+(fx.reason||'顔を解析できませんでした。')); return; }
+    view.face=fx;
+    result=diagnose(fx.features, fx.quality);
+    hideLoading();
+  }catch(err){ console.error(err); hideLoading(); setStatus('⚠️ 解析中にエラーが発生しました。別の写真でお試しください。'); return; }
+
+  showLoading('あなたの顔立ちタイプを判定しています…');
   setTimeout(()=>{
     hideLoading();
-    renderResult(__stubDiagnose());
+    renderResult(result);
     const res=$('#pc-result'); res.hidden=false;
     res.classList.remove('pc-reveal'); void res.offsetWidth; res.classList.add('pc-reveal');
     res.scrollIntoView({behavior:'smooth',block:'start'});
