@@ -192,3 +192,15 @@ export const CROSS = {
   color:    'https://yuya-suzuki-37.github.io/memoro-color/',
   skeletal: 'https://yuya-suzuki-37.github.io/memoro-skeletal/',
 };
+
+// タイプ別に図解するネックラインの形（app.jsのNECK_PATHSのキー）
+export const NECKLINES = {
+  sweet:   ['heart','u'],
+  fresh:   ['heart','v'],
+  natural: ['v','boat'],
+  soft:    ['round','u','boat'],
+  chic:    ['v','square'],
+  glamour: ['round','offshoulder','heart'],
+  elegant: ['round','boat','offshoulder'],
+  sharp:   ['boat','square','oneshoulder'],
+};

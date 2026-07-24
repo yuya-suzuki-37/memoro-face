@@ -81,7 +81,7 @@
 /* ---------- 顔オーバーレイ（自分の顔にライン重ね） ---------- */
 .fc-overlay-wrap{ text-align:center; margin:2px 0 10px; }
 .fc-face-canvas{
-  max-width:100%; width:340px; border-radius:14px;
+  max-width:100%; width:340px; height:auto; display:block; margin:0 auto; border-radius:14px;
   border:1px solid var(--lx-line,#E7DCCA); box-shadow:0 6px 20px rgba(71,63,54,.12);
 }
 .fc-legend{
@@ -104,3 +104,10 @@
 .fc-cross p{ font-size:12.5px; line-height:1.85; color:var(--lx-ink-2,#6E6457); margin:0 0 12px; }
 .fc-cross-btns{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 .fc-cross-btns .lx-btn{ padding:11px 20px; font-size:13px; }
+
+/* ---------- ネックライン図解 ---------- */
+.fc-neck-card{ grid-column:1 / -1; }
+.fc-neck-row{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:10px 0 12px; }
+.fc-neck-item{ text-align:center; }
+.fc-neck-svg{ width:78px; height:auto; display:block; }
+.fc-neck-item span{ display:block; margin-top:3px; font-size:11px; color:var(--lx-muted,#9E927E); }

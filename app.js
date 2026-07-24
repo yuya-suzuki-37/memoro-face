@@ -3,7 +3,7 @@
 // 顔写真1枚 → FaceLandmarker(478点)解析 → 2軸スコア → 8タイプ → 結果
 // 表記方針(_knowledge/07): 数値は出さず「〜寄り」の傾向表現。免責は結果と同一ビューに常時可視。
 // ===================================================================
-import { TYPES, TYPE_ORDER, GRID, AXIS, CROSS } from './data.js?v=2';
+import { TYPES, TYPE_ORDER, GRID, AXIS, CROSS, NECKLINES } from './data.js?v=3';
 import { extractFace, FACE_OVAL, DRAW_PTS } from './analyzer.js?v=2';
 import { diagnose } from './diagnosis.js?v=2';
 
@@ -126,6 +126,31 @@ $('#pc-diagnose').addEventListener('click', async()=>{
   }, 900);
 });
 
+// ---- ネックラインの形を図解（SVG・無料でイメージできるように） ----
+const NECK_FRAME='<path d="M46,12 L46,28 M54,12 L54,28" stroke="#CBBFAE" stroke-width="2" fill="none"/><path d="M46,28 Q33,30 16,44 L20,98 M54,28 Q67,30 84,44 L80,98" stroke="#CBBFAE" stroke-width="2" fill="none"/>';
+const NECK_PATHS={
+  round:'M34,32 Q50,54 66,32',
+  u:'M32,32 Q50,66 68,32',
+  v:'M36,32 L50,60 L64,32',
+  deepv:'M37,32 L50,74 L63,32',
+  heart:'M33,33 C40,30 46,42 50,52 C54,42 60,30 67,33',
+  boat:'M26,34 Q50,42 74,34',
+  square:'M36,32 L36,52 L64,52 L64,32',
+  offshoulder:'M16,46 Q50,56 84,46',
+  oneshoulder:'M22,52 L60,30 L72,34',
+};
+const NECK_LABEL={round:'ラウンド',u:'U字',v:'Vネック',deepv:'深めV',heart:'ハート',boat:'ボート',square:'スクエア',offshoulder:'オフショルダー',oneshoulder:'ワンショルダー'};
+function necklineDiagrams(typeId, accent){
+  const shapes=NECKLINES[typeId]||[];
+  if(!shapes.length) return '';
+  return `<div class="fc-neck-row">${shapes.map(s=>{
+    const p=NECK_PATHS[s]; if(!p) return '';
+    return `<div class="fc-neck-item">
+      <svg viewBox="0 0 100 104" class="fc-neck-svg" xmlns="http://www.w3.org/2000/svg">${NECK_FRAME}<path d="${p}" stroke="${accent}" stroke-width="3.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>${NECK_LABEL[s]||''}</span></div>`;
+  }).join('')}</div>`;
+}
+
 // ---- 2軸マップ ----
 function buildMap(typeId, accent){
   const rows=GRID.map(row=>row.map(id=>{
@@ -201,7 +226,7 @@ function renderResult(r){
         <p class="pc-wd-theme">${t.catch}</p>
       </div>
       <div class="fc-wd-grid">
-        <div class="fc-wd-card"><b>💠 ネックライン</b><p>${b.neckline}</p></div>
+        <div class="fc-wd-card fc-neck-card"><b>💠 ネックライン</b>${necklineDiagrams(r.typeId, t.accent)}<p>${b.neckline}</p></div>
         <div class="fc-wd-card"><b>💇‍♀️ ヘア</b><p>${b.hair}</p></div>
         <div class="fc-wd-card"><b>💄 メイク</b><p>${b.makeup}</p></div>
         <div class="fc-wd-card"><b>💍 アクセサリー</b><p>${b.accessory}</p></div>
