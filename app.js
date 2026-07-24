@@ -5,7 +5,7 @@
 // ===================================================================
 import { TYPES, TYPE_ORDER, GRID, AXIS } from './data.js?v=1';
 import { extractFace, FACE_OVAL, DRAW_PTS } from './analyzer.js?v=2';
-import { diagnose } from './diagnosis.js?v=1';
+import { diagnose } from './diagnosis.js?v=2';
 
 const $=s=>document.querySelector(s);
 const VISION='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9';

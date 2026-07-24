@@ -4,7 +4,7 @@
 //          確信度は「目安・参考」の2段階（高は出さない）／UIは傾向表現。
 // ===================================================================
 import { GRID } from './data.js?v=1';
-import { CALIB } from './calib.js?v=1';
+import { CALIB } from './calib.js?v=2';
 
 const clamp=(v,lo=-1,hi=1)=> Math.max(lo,Math.min(hi,v));
 
@@ -67,7 +67,8 @@ export function diagnose(features, quality){
   // ---- 確信度（高は出さない） ----
   const nonDiagonal = (typeId==='natural' || typeId==='glamour'); // 子供×直線 / 大人×曲線（過疎・07）
   let conf=1;
-  if(Math.abs(S_age)>=0.30 && Math.abs(S_shape)>=0.30) conf++;
+  // どちらか一軸が明確に振れていれば「目安」に（両軸とも極端でなくてよい）
+  if(Math.max(Math.abs(S_age), Math.abs(S_shape))>=0.33) conf++;
   if(yawBad||pitchBad) conf--;
   if(squint||smiling) conf--;
   if(nonDiagonal){ conf--; notes.push('この組み合わせ（子供顔×直線／大人顔×曲線）は判別が難しめのため控えめに表示しています'); }

@@ -15,10 +15,12 @@
 export const CALIB = {
   // ---- おもざし軸（− 子供 / ＋ 大人） ----
   age: {
-    lowerFace:  { center:0.50, half:0.08, w:1.6, dir:+1 }, // (A) 下顔面比: 大→大人・主軸
-    faceAspect: { center:0.63, half:0.09, w:0.6, dir:+1 }, // (B) (menton-nasion)/頬骨幅: 大→面長→大人
-    eyeLevel:   { center:0.36, half:0.07, w:0.5, dir:-1 }, // (B) 目の縦位置: 大(目が下)→子供
-    eyeSize:    { center:0.20, half:0.035,w:0.5, dir:-1 }, // (B) 目幅/顔幅: 大→子供
+    // 🔴 QA(実写真)較正 2026-07: 下顔面比の中心を新古典0.50→実測クラスタ0.55へ(帯も拡幅)。
+    //   成人女性が「強い大人」に張り付く偏りを是正し、子供/中間の余地を確保。08参照。
+    lowerFace:  { center:0.55, half:0.11, w:1.6, dir:+1 }, // (A) 下顔面比: 大→大人・主軸
+    faceAspect: { center:0.65, half:0.12, w:0.6, dir:+1 }, // (B) (menton-nasion)/頬骨幅: 大→面長→大人
+    eyeLevel:   { center:0.33, half:0.07, w:0.5, dir:-1 }, // (B) 目の縦位置: 大(目が下)→子供
+    eyeSize:    { center:0.20, half:0.04, w:0.5, dir:-1 }, // (B) 目幅/顔幅: 大→子供
   },
   // ---- かたち軸（− 曲線 / ＋ 直線） ----
   shape: {
