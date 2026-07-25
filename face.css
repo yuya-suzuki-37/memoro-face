@@ -117,3 +117,11 @@
 .fc-shape-item{ text-align:center; }
 .fc-shape-svg{ width:66px; height:auto; display:block; }
 .fc-shape-item span{ display:block; margin-top:3px; font-size:11px; color:var(--lx-muted,#9E927E); }
+
+/* ---------- ヘアは実画像で表示 ---------- */
+.fc-hair-row{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:10px 0 12px; }
+.fc-hair-item{ margin:0; text-align:center; width:130px; }
+.fc-hair-img{ width:130px; height:130px; object-fit:cover; border-radius:12px; display:block;
+  border:1px solid var(--lx-line,#E7DCCA); box-shadow:0 4px 14px rgba(71,63,54,.12); }
+.fc-hair-item figcaption{ margin-top:5px; font-size:11.5px; color:var(--lx-ink-2,#6E6457); }
+@media (max-width:680px){ .fc-hair-item, .fc-hair-img{ width:120px; } .fc-hair-img{ height:120px; } }

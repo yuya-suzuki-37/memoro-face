@@ -173,21 +173,12 @@ function bouquetDiagrams(typeId, accent){
   }).join('')}</div>`;
 }
 
-// ---- ヘアのシルエットを図解（後ろ姿） ----
+// ---- ヘアは実画像（Codex生成・ブライダル参考写真）で見せる ----
 const HAIR_LABEL={down:'ダウン',updo:'アップ',halfup:'ハーフアップ',lowbun:'ローシニヨン',ponytail:'ポニーテール'};
-const HD='fill="#E7DCCA" stroke="#CBBFAE" stroke-width="1.5"';
-const HR='fill="#8a6f57"';
-const HAIR_SHAPES={
-  down:`<path ${HR} d="M26,36 Q26,18 46,18 Q66,18 66,36 Q70,64 66,96 Q62,112 52,114 L40,114 Q30,112 26,96 Q22,64 26,36 Z"/><ellipse ${HD} cx="46" cy="44" rx="18" ry="22"/>`,
-  updo:`<circle ${HR} cx="46" cy="22" r="11"/><ellipse ${HR} cx="46" cy="52" rx="24" ry="28"/><ellipse ${HD} cx="46" cy="52" rx="18" ry="22"/>`,
-  halfup:`<path ${HR} d="M28,40 Q28,20 46,20 Q64,20 64,40 Q66,74 60,100 L32,100 Q26,74 28,40 Z"/><ellipse ${HD} cx="46" cy="46" rx="18" ry="22"/><path ${HR} d="M38,22 Q46,14 54,22 Q50,28 46,28 Q42,28 38,22 Z"/>`,
-  lowbun:`<ellipse ${HD} cx="46" cy="46" rx="18" ry="22"/><path ${HR} d="M28,42 Q28,22 46,22 Q64,22 64,42 Q64,58 58,66 L34,66 Q28,58 28,42 Z"/><ellipse ${HD} cx="46" cy="44" rx="15" ry="19"/><circle ${HR} cx="46" cy="80" r="12"/>`,
-  ponytail:`<ellipse ${HR} cx="46" cy="46" rx="22" ry="26"/><ellipse ${HD} cx="46" cy="46" rx="18" ry="22"/><path ${HR} d="M46,70 Q40,92 44,112 Q46,118 48,112 Q54,92 46,70 Z"/>`,
-};
 function hairDiagrams(typeId){
   const shapes=HAIRS[typeId]||[]; if(!shapes.length) return '';
-  return `<div class="fc-shape-row">${shapes.map(s=>{ const c=HAIR_SHAPES[s]; if(!c) return '';
-    return `<div class="fc-shape-item"><svg viewBox="0 0 92 126" class="fc-shape-svg" xmlns="http://www.w3.org/2000/svg">${c}</svg><span>${HAIR_LABEL[s]||''}</span></div>`;
+  return `<div class="fc-hair-row">${shapes.map(s=>{ if(!HAIR_LABEL[s]) return '';
+    return `<figure class="fc-hair-item"><img class="fc-hair-img" src="assets/hair-${s}.jpg" alt="${HAIR_LABEL[s]}のヘアスタイル" decoding="async"><figcaption>${HAIR_LABEL[s]}</figcaption></figure>`;
   }).join('')}</div>`;
 }
 
