@@ -1,8 +1,8 @@
 /* ===== パーソナルカラー診断 個別コンポーネント（上品LP流用） ===== */
 
-/* ヒーロー画像（骨格診断用） */
+/* ヒーロー画像（顔立ち診断用） */
 body.lx .lx-hero-bg{
-  background-image:url('assets/fc-hero.png') !important;
+  background-image:url('assets/fc-hero.png?v=2') !important;
   background-position:center top; background-size:cover; background-repeat:no-repeat;
 }
 /* タイプ別ドレス画像 */
