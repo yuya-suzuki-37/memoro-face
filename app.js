@@ -4,8 +4,8 @@
 // 表記方針(_knowledge/07): 数値は出さず「〜寄り」の傾向表現。免責は結果と同一ビューに常時可視。
 // ===================================================================
 import { TYPES, TYPE_ORDER, GRID, AXIS, CROSS, NECKLINES, BOUQUETS, HAIRS } from './data.js?v=4';
-import { extractFace, FACE_OVAL, DRAW_PTS } from './analyzer.js?v=2';
-import { diagnose } from './diagnosis.js?v=3';
+import { extractFace, FACE_OVAL, DRAW_PTS } from './analyzer.js?v=3';
+import { diagnose } from './diagnosis.js?v=4';
 
 const $=s=>document.querySelector(s);
 const VISION='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.9';
@@ -109,7 +109,7 @@ $('#pc-diagnose').addEventListener('click', async()=>{
     await ensureFace();
     showLoading('顔立ちを解析しています…');
     const det=faceLandmarker.detect(view.canvas);
-    const fx=extractFace(det);
+    const fx=extractFace(det, view.W, view.H);
     if(!fx.ok){ hideLoading(); setStatus('⚠️ '+(fx.reason||'顔を解析できませんでした。')); return; }
     view.face=fx;
     result=diagnose(fx.features, fx.quality);

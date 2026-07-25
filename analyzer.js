@@ -21,6 +21,10 @@ const dist=(a,b)=> Math.hypot(a.x-b.x, a.y-b.y);
 const mid=(a,b)=> ({x:(a.x+b.x)/2, y:(a.y+b.y)/2});
 const clamp=(v,lo,hi)=> Math.max(lo,Math.min(hi,v));
 const deg=r=> r*180/Math.PI;
+// 点Pにおける A-P-B の内角（度）。等方座標で呼ぶこと（輪郭の角ばり測定用）
+const angleAt=(A,P,B)=>{ const ax=A.x-P.x,ay=A.y-P.y,bx=B.x-P.x,by=B.y-P.y;
+  const d=ax*bx+ay*by, na=Math.hypot(ax,ay)||1e-6, nb=Math.hypot(bx,by)||1e-6;
+  return deg(Math.acos(clamp(d/(na*nb),-1,1))); };
 
 // ---- ロール正規化: 両目(虹彩)を水平にするよう全点を回転 ----
 function rollNormalize(lm){
@@ -67,7 +71,7 @@ function canthalTilt(lm){
   return (tL+tR)/2;
 }
 
-export function extractFace(result){
+export function extractFace(result, imgW, imgH){
   const faces=result && result.faceLandmarks;
   if(!faces || !faces.length) return { ok:false, reason:'顔を検出できませんでした。明るく・正面・顔がはっきり写った写真でお試しください。' };
   // 複数顔なら最大の顔を採用
@@ -75,6 +79,12 @@ export function extractFace(result){
   if(faces.length>1){
     let best=-1; faces.forEach(f=>{ let minx=1,maxx=0; f.forEach(p=>{ if(p.x<minx)minx=p.x; if(p.x>maxx)maxx=p.x; }); const w=maxx-minx; if(w>best){best=w; lm0=f;} });
   }
+
+  // 🔴 等方(ピクセル)座標へ変換: MediaPipeのx,yは画像の幅/高さで別々に正規化される。
+  //    そのままだと縦横比(faceAspect)・目の丸み(eyeRound)・目尻角度(canthalTilt)が
+  //    写真のアスペクト比に依存して歪む。x*W, y*H で真の比率に補正（ロール回転もこの後で正しく効く）。
+  const Wimg=imgW||1, Himg=imgH||1;
+  lm0 = lm0.map(p=>({ x:p.x*Wimg, y:p.y*Himg, z:p.z }));
 
   const { lm, rollDeg } = rollNormalize(lm0);
   const W = dist(lm[P.cheekL], lm[P.cheekR]) || 1e-4;
@@ -93,15 +103,18 @@ export function extractFace(result){
   const eyeH_R=dist(lm[P.eyeR_top], lm[P.eyeR_bot]);
   const eyeH=(eyeH_L+eyeH_R)/2;
 
-  // ---- 特徴量 ----
+  // ---- 特徴量（等方座標で算出。faceAspect/eyeRound/canthalTiltは真の比率・角度） ----
   const features = {
-    lowerFace:  (yChin - ySub)/faceH_nas,        // 下顔面比（中心0.50）
-    faceAspect: faceH_nas / W,                    // 縦横比（中心0.87）
-    eyeLevel:   (eyeCy - yTop)/faceH_top,         // 目の縦位置（中心0.40・大=目が下=子供）
-    eyeSize:    eyeW / W,                          // 目幅/顔幅（中心0.225・大=子供）
-    canthalTilt: canthalTilt(lm),                 // 目尻角度 度（中心+5）
-    eyeRound:   eyeH / (eyeW||1e-4),               // 目の縦横比（中心0.32・大=丸目）
-    jawWidth:   dist(lm[P.jawL], lm[P.jawR]) / W,  // 顎幅/頬骨幅（中心0.78・低信頼）
+    lowerFace:  (yChin - ySub)/faceH_nas,        // 下顔面比（比率・スケール不変）
+    faceAspect: faceH_nas / W,                    // 縦横比（等方化で真値≒臨床0.85寄り）
+    eyeLevel:   (eyeCy - yTop)/faceH_top,         // 目の縦位置（大=目が下=子供）
+    eyeSize:    eyeW / W,                          // 目幅/顔幅（大=子供）
+    canthalTilt: canthalTilt(lm),                 // 目尻角度 度（等方化で真の角度）
+    eyeRound:   eyeH / (eyeW||1e-4),               // 目の縦横比（等方化で真値≒臨床0.35寄り・大=丸目）
+    jawWidth:   dist(lm[P.jawL], lm[P.jawR]) / W,  // 顎幅/頬骨幅（低信頼）
+    // ---- 輪郭の角ばり（かたち軸の補助・等方座標必須。小=角ばり=直線 / 大=丸み=曲線） ----
+    gonialAngle:(angleAt(lm[150],lm[172],lm[132]) + angleAt(lm[379],lm[397],lm[361]))/2, // エラ角
+    chinAngle:  angleAt(lm[176],lm[152],lm[400]),  // あご先の尖り（小=尖り）
   };
 
   // ---- 品質 ----

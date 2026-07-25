@@ -4,7 +4,7 @@
 //          確信度は「目安・参考」の2段階（高は出さない）／UIは傾向表現。
 // ===================================================================
 import { GRID } from './data.js?v=1';
-import { CALIB } from './calib.js?v=3';
+import { CALIB } from './calib.js?v=4';
 
 const clamp=(v,lo=-1,hi=1)=> Math.max(lo,Math.min(hi,v));
 
@@ -29,13 +29,15 @@ export function diagnose(features, quality){
   const kVert = (yawBad||pitchBad) ? 0.5 : 1.0;
   const kEye  = (squint||smiling) ? 0.4 : 1.0;
 
-  // ---- おもざし軸 S_age ----
+  // ---- おもざし軸 S_age（多重信号: 縦横比＋目の位置＋輪郭の顎/あご） ----
   const A=CALIB.age;
   const ageTerms=[
-    { v:norm(f.lowerFace, A.lowerFace),  w:A.lowerFace.w  * kVert },
-    { v:norm(f.faceAspect,A.faceAspect), w:A.faceAspect.w * kVert },
-    { v:norm(f.eyeLevel,  A.eyeLevel),   w:A.eyeLevel.w   * kVert },
-    { v:norm(f.eyeSize,   A.eyeSize),    w:A.eyeSize.w    * kEye  },
+    { v:norm(f.faceAspect, A.faceAspect),  w:A.faceAspect.w  * kVert },
+    { v:norm(f.eyeLevel,   A.eyeLevel),    w:A.eyeLevel.w    * kVert },
+    { v:norm(f.gonialAngle,A.gonialAngle), w:A.gonialAngle.w * kVert }, // エラ角（輪郭・pose感受）
+    { v:norm(f.chinAngle,  A.chinAngle),   w:A.chinAngle.w   * kVert }, // あご先角（輪郭・pose感受）
+    { v:norm(f.lowerFace,  A.lowerFace),   w:A.lowerFace.w   * kVert },
+    { v:norm(f.eyeSize,    A.eyeSize),     w:A.eyeSize.w     * kEye  },
   ];
   const S_age=wsum(ageTerms);
 
