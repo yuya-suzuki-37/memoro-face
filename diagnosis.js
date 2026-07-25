@@ -4,7 +4,7 @@
 //          確信度は「目安・参考」の2段階（高は出さない）／UIは傾向表現。
 // ===================================================================
 import { GRID } from './data.js?v=1';
-import { CALIB } from './calib.js?v=2';
+import { CALIB } from './calib.js?v=3';
 
 const clamp=(v,lo=-1,hi=1)=> Math.max(lo,Math.min(hi,v));
 
